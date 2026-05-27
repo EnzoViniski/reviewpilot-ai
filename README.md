@@ -3,7 +3,7 @@
 GitHub App that reviews Pull Requests using Java, Spring Boot and LLMs.
 
 ## Demo
-GIF or screenshot of a real PR comment.
+Still in desenvolviment...
 
 ## Why I built this
 I was manually pasting diffs into LLMs before opening PRs. I automated the workflow.
