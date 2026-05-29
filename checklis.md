@@ -72,4 +72,38 @@
 - [x] Open a pull request
 - [x] Merge the pull request into `main`
 - [x] Close issues 1 and 2 after merge
-- [ ] Start issue 3: `Configure application profiles`
+- [x] Start issue 3: `Configure application profiles`
+
+## 2026-05-29
+
+### Application profiles
+
+- [x] Switched work to branch `chore/configure-application-profiles`
+- [x] Reviewed the default `application.properties`
+- [x] Kept local PostgreSQL settings in `application-local.properties`
+- [x] Created `application-test.properties`
+- [x] Configured automated tests to use the `test` profile
+- [x] Added H2 as an in-memory database for tests
+- [x] Configured H2 dependency with test scope
+- [x] Disabled SQL script initialization in tests with `spring.sql.init.mode=never`
+- [x] Removed `data.sql` because it was being loaded automatically and breaking the test context
+
+### Validation
+
+- [x] Ran `./mvnw test`
+- [x] Confirmed tests do not require manually running PostgreSQL
+
+### Documentation
+
+- [x] Documented how to run the application with the `local` profile
+- [x] Documented how to run the automated tests
+
+### Next task
+
+- [ ] Review the final diff before committing
+- [ ] Commit the profile configuration changes
+- [ ] Push the branch
+- [ ] Open a pull request
+- [ ] Merge the pull request into `main`
+- [ ] Close issue 3 after merge
+- [ ] Prepare issue 4: `Create GitHub webhook endpoint`

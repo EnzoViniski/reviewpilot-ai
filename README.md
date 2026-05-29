@@ -32,10 +32,34 @@ Java 21, Spring Boot 3, PostgreSQL, Docker, GitHub Apps, LLM API.
 6. Bot comments on PR
 
 ## Running locally
-3 commands max.
+
+Start the local PostgreSQL database:
+
+```bash
+docker compose up -d
+```
+
+Run the application with the `local` profile:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+Check the health endpoint:
+
+```bash
+curl http://localhost:8080/actuator/health
+```
 
 ## Testing
-Coverage badge and command.
+
+Run the automated test suite:
+
+```bash
+./mvnw test
+```
+
+Tests use the `test` profile with an in-memory H2 database, so they do not require a local PostgreSQL instance.
 
 ## Roadmap
 MVP, v0.2, v1.0.
