@@ -93,6 +93,33 @@ Entra depois do MVP:
 - Comentarios inline quando a linha do diff permitir
 - Tela simples de historico de reviews
 
+### Evolucao de mensageria
+
+Ordem correta para nao explodir escopo:
+
+1. MVP com processamento assincrono simples:
+   - Webhook valida assinatura
+   - Salva evento no banco
+   - Retorna `202 Accepted`
+   - Dispara processamento em background com service separado ou Spring `@Async`
+   - Usa idempotencia por `repository + pull_request_number + head_sha`
+
+2. Depois do bot comentar PR real:
+   - Introduzir RabbitMQ ou Kafka
+   - Webhook vira producer de mensagens
+   - Worker/consumer processa review
+   - Adicionar retry com backoff
+   - Adicionar dead letter queue
+   - Controlar rate limit por repo ou installation
+
+Ganho arquitetural:
+
+- Evita timeout no webhook do GitHub
+- Separa recebimento de evento e processamento pesado
+- Permite retry quando GitHub API ou LLM falham
+- Facilita escalar consumers no futuro
+- Mantem o fluxo mais resiliente sem bloquear a entrega do MVP
+
 ### Versao 1.0 - Portfolio forte
 
 Entra ate outubro:
@@ -866,7 +893,8 @@ Post final:
 | LLM real | 07/07 | Review gerada por IA |
 | Comentario no PR | 14/07 | Bot comentando PR real |
 | Staging | 31/07 | Demo acessivel |
-| Fila/retry | 15/08 | Processamento robusto |
+| Assincrono simples | 07/08 | Webhook retorna rapido e review roda em background com service separado ou `@Async` |
+| Fila/retry | 15/08 | RabbitMQ ou Kafka com retry, backoff e base para DLQ |
 | Testcontainers | 21/08 | Testes de integracao |
 | README completo | 31/08 | Portfolio apresentavel |
 | Producao | 15/09 | App rodando publicamente |
@@ -1186,25 +1214,51 @@ Se marcou menos de 3, o dia ficou fraco. No dia seguinte, faca a primeira tarefa
 
 ---
 
-## Proxima acao imediata
+## Estado atual
 
-Hoje, 27/05/2026:
+Atualizado em 29/05/2026:
 
-1. Criar repo `reviewpilot-ai`
-2. Escrever README inicial com o escopo v0.1
-3. Criar projeto Spring Boot
-4. Criar 10 issues:
-   - Bootstrap Spring Boot
-   - Docker Compose Postgres
-   - Webhook endpoint
-   - GitHub signature verifier
-   - Webhook event persistence
-   - GitHub App auth
-   - Pull Request diff fetcher
-   - Diff chunker
-   - LLM client fake
-   - PR comment publisher
-5. Enviar email para Renato sobre bolsa
+- Repo `reviewpilot-ai` criado e conectado ao GitHub
+- Projeto Spring Boot criado com Java 21, Maven e Spring Boot 3.5.14
+- Roadmap e checklist de progresso adicionados ao projeto
+- 10 issues iniciais criadas no GitHub
+- Issue 1 concluida: bootstrap do projeto Spring Boot
+- Issue 2 concluida: PostgreSQL local com Docker Compose
+- Issue 3 em andamento: configuracao de application profiles
+- Aplicacao roda com profile `local`
+- Testes rodam com profile `test` usando H2 em memoria
+- `data.sql` removido para evitar inicializacao automatica indevida em testes
+- `spring.sql.init.mode=never` configurado no profile de teste
+- `./mvnw test` executado com sucesso
+- `/actuator/health` retorna `UP`
+- PR do setup local mergeado
+
+---
+
+## Proxima sessao
+
+Amanha, 30/05/2026:
+
+Objetivo principal: fechar a issue 3, `Configure application profiles`, se o PR ainda nao tiver sido mergeado.
+
+1. Revisar o diff final da branch `chore/configure-application-profiles`
+2. Confirmar que `./mvnw test` continua passando
+3. Fazer commit das alteracoes da issue 3
+4. Abrir PR
+5. Mergear PR e fechar a issue 3
+
+Se a issue 3 ja estiver fechada:
+
+1. Criar branch para a issue 4: `Create GitHub webhook endpoint`
+2. Definir contrato inicial do endpoint `POST /api/webhooks/github`
+3. Implementar o controller retornando `202 Accepted`
+4. Criar primeiro teste do controller
+
+Se sobrar energia:
+
+- Aplicar em 5 vagas
+- Registrar as aplicacoes no checklist
+- Ler a documentacao de webhooks do GitHub App
 
 ---
 
